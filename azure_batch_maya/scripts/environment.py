@@ -131,16 +131,16 @@ class AzureBatchEnvironment(object):
             windows_offers = [value['offer'] for value in MAYA_IMAGES.values() if 'windows' in value['node_sku_id']]
             linux_offers = [value['offer'] for value in MAYA_IMAGES.values() if value['offer'] not in windows_offers]
             if pool_image.offer in windows_offers:
-                return utils.OperatingSystem.windows
+                return utils.OperatingSystem.windows.value
             elif pool_image.offer in linux_offers:
-                return utils.OperatingSystem.linux
+                return utils.OperatingSystem.linux.value
             else:
                 raise ValueError('Selected pool is not using a valid Maya image.')
 
         if utils.OperatingSystem.windows.value in self.ui.get_image():
-            return utils.OperatingSystem.windows
+            return utils.OperatingSystem.windows.value
         else:
-            return utils.OperatingSystem.linux
+            return utils.OperatingSystem.linux.value
 
     def get_environment_settings(self):
         env_vars = self.ui.get_env_vars()

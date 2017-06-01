@@ -249,7 +249,7 @@ class AzureBatchSubmission(object):
             batch_parameters['metadata'] =  [{"name": "JobType", "value": "Maya"}]
             template_file = os.path.join(
                 os.environ['AZUREBATCH_TEMPLATES'],
-                "{}-basic-{}.json".format(self.renderer.render_engine, pool_os.value.lower()))
+                "{}-basic-{}.json".format(self.renderer.render_engine, pool_os.lower()))
             batch_parameters['applicationTemplateInfo'] = {'filePath': template_file}
             application_params = {}
             batch_parameters['applicationTemplateInfo']['parameters'] = application_params
