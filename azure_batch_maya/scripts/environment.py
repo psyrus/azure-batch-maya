@@ -6,6 +6,7 @@
 import os
 import logging
 import json
+from collections import OrderedDict
 
 from api import MayaAPI as maya
 from api import MayaCallbacks as callback
@@ -65,7 +66,7 @@ class AzureBatchEnvironment(object):
         """Populate the list of availablke hardware SKUs."""
         sku_path = os.path.join(os.environ['AZUREBATCH_TOOLS'], 'skus.json')
         with open(sku_path, 'r') as sku_list:
-            return json.load(sku_list)
+            return json.load(sku_list, object_pairs_hook=OrderedDict)
 
     def _get_plugin_licenses(self):
         """Check whether the available license servers are required by the current
@@ -125,6 +126,9 @@ class AzureBatchEnvironment(object):
 
     def get_vm_sku(self):
         return self.ui.get_sku()
+
+    def get_vm_sku_cores(self):
+        return self.skus[self.get_vm_sku()]
 
     def os_flavor(self, pool_image=None):
         if pool_image:

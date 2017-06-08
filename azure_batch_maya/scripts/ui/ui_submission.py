@@ -30,7 +30,7 @@ class SubmissionUI(object):
         self.page = maya.form_layout(enableBackground=True) 
         self.select_pool_type = self.AUTO_POOL
         self.select_instances = 1
-        
+
         with utils.ScrollLayout(height=475, parent=self.page) as scroll:
             box_label = "Pool Settings"
             with utils.FrameLayout(label=box_label, collapsable=True):
@@ -38,7 +38,7 @@ class SubmissionUI(object):
                     numberOfColumns=2,
                     columnWidth=((1, 100), (2, 200)),
                     rowSpacing=(1, 10),
-                    rowOffset=((1, "top", 20), (2, "bottom", 20)))
+                    rowOffset=((1, "top", 20), (3, "bottom", 20)))
                 maya.text(label="Pools:   ", align="right")
                 maya.radio_group(
                     labelArray3=("Auto provision a pool for this job",
@@ -60,6 +60,8 @@ class SubmissionUI(object):
                     fieldMaxValue=self.base.max_pool_size,
                     changeCommand=self.set_pool_instances,
                     annotation="Number of instances in pool")
+                self.sku_lbl = maya.text(label="Total Cores:   ", align="right")
+                self.sku_text = maya.text(label="-", align="left")
                 maya.parent()
 
             box_label = "Render Settings"
@@ -138,7 +140,7 @@ class SubmissionUI(object):
         """Prepare Submit tab contents - nothing needs to be done here as all
         loaded on plug-in start up.
         """
-        pass
+        self.update_cores()
 
     def refresh(self, *args):
         """Refresh Submit tab. Command for refresh_button.
@@ -149,6 +151,7 @@ class SubmissionUI(object):
         self.base.refresh_renderer(self.render_module)
         self.selected_dir = utils.get_default_output_path()
         maya.text_field(self.dir, edit=True, text=self.selected_dir)
+        self.update_cores()
         self.refresh_button.finish()
 
     def submit_status(self, status):
@@ -200,6 +203,7 @@ class SubmissionUI(object):
         based on the instance slider.
         """
         self.select_instances = instances
+        self.update_cores()
 
     def set_pool_new(self, *args):
         """Set selected pool type to be new pool of given size.
@@ -256,3 +260,9 @@ class SubmissionUI(object):
             annotation="Use an existing persistent pool ID")
         for pool_id in pool_options:
             maya.menu_option(pool_id)
+
+    def get_selected_sku_cores(self):
+        return self.base.env_manager.get_vm_sku_cores() if hasattr(self.base, 'env_manager') else 0
+
+    def update_cores(self):
+        maya.text(self.sku_text, edit=True, label= int(self.select_instances) * self.get_selected_sku_cores())

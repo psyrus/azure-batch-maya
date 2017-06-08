@@ -47,7 +47,9 @@ class EnvironmentUI(object):
                         maya.text(label="Use VM Type: ", align='right')
                         with utils.Dropdown(self.set_sku) as sku_settings:
                             self._sku = sku_settings
-                            for sku in skus:
+                            for sku in skus.iterkeys():
+                                #It would be nice to show the number of cores that they're getting with each selection
+                                #sku = '{} ({} cores)'.format(sku, skus[sku])
                                 self._sku.add_item(sku)
                         maya.text(label="Use license servers: ", align='right')
                         for label, checked in licenses.items():
@@ -131,7 +133,7 @@ class EnvironmentUI(object):
 
     def select_image(self, image):
         """Select the cached image value if available."""
-        # TODO: Check value against current lists. 
+        # TODO: Check value against current lists.
         if image:
             self._image.select(image)
 
