@@ -47,6 +47,9 @@ class SubmissionUI(object):
                     numberOfRadioButtons=3,
                     select=self.select_pool_type,
                     vertical=True,
+                    enable1=True,
+                    enable2=False,
+                    enable3=False,
                     onCommand1=self.set_pool_auto,
                     onCommand2=self.set_pool_reuse,
                     onCommand3=self.set_pool_new)

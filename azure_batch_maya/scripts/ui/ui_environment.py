@@ -50,7 +50,7 @@ class EnvironmentUI(object):
                             for sku in skus.iterkeys():
                                 #It would be nice to show the number of cores that they're getting with each selection
                                 #sku = '{} ({} cores)'.format(sku, skus[sku])
-                                self._sku.add_item(sku)
+                                self._sku.add_item(sku, '{}: {} cores'.format(sku, skus[sku]))
                         maya.text(label="Use license servers: ", align='right')
                         for label, checked in licenses.items():
                             self.license_settings[label] = maya.check_box(

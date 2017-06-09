@@ -271,11 +271,11 @@ class Dropdown(object):
         pass
         #maya.parent()
 
-    def add_item(self, item):
+    def add_item(self, item, annotation=""):
         """Add item to the menu
         :param str item: Menu option to add.
         """
-        maya.menu_option(label=item, parent=self.menu)
+        maya.menu_option(label=item, parent=self.menu, annotation=annotation)
 
     def selected(self):
         """Get selected option.
