@@ -40,7 +40,7 @@ class JobHistoryUI(object):
                         font="boldLabelFont")
                 self.jobs_layout = sublayout
 
-        with utils.Row(1, 1, 355, "center", (1,"bottom",0)) as btn:             
+        with utils.Row(1, 1, 355, "center", (1,"bottom",0)) as btn:
             self.refresh_button = utils.ProcButton(
                 "Refresh", "Refreshing...", self.refresh)
         maya.form_layout(
@@ -173,7 +173,7 @@ class JobHistoryUI(object):
     def refresh(self, *args):
         """Refresh Jobs tab. Command for refresh_button.
         Remove all existing UI elements and job details and re-build
-        from scratch. This is also called to populate 
+        from scratch. This is also called to populate
         the tab for the first time.
         """
         self.refresh_button.start()
@@ -187,7 +187,7 @@ class JobHistoryUI(object):
             self.empty_jobs = maya.text(
                 label="No jobs to display", parent=self.jobs_layout)
         self.refresh_button.finish()
-        
+
     def disable(self, enabled):
         """Disable the tab from user interaction. Used during long running
         processes like refreshing the job data, and when plug-in is
@@ -389,7 +389,7 @@ class AzureBatchJobInfo(object):
                             (self.cancel_button, 'right', 5, 80),
                             (self.delete_button, 'left', 5, 80)])
         self.base.job_selected(self)
-        maya.execute(self.base.get_thumbnail)  
+        maya.execute(self.base.get_thumbnail)
         maya.refresh()
 
     def on_collapse(self):
@@ -509,8 +509,10 @@ class AzureBatchJobInfo(object):
 
     def cancel_job(self, *args):
         """Cancel the specified job. Command for cancel_button."""
-        self.base.cancel_job()
+        if maya.confirm("Are you sure you want to cancel this job?", ["Yes", "No"]) == "Yes":
+            self.base.cancel_job()
 
     def delete_job(self, *args):
         """Cancel the specified job. Command for cancel_button."""
-        self.base.delete_job()
+        if maya.confirm("Are you sure you want to delete this job?", ["Yes", "No"]) == "Yes":
+            self.base.delete_job()

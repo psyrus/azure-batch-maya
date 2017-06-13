@@ -421,7 +421,7 @@ class JobWatcher(object):
 
         :param str id: The ID of the job to watch.
         :param str data_path: The path of the AzureBatch config dir.
-        :param str dir: The path of directory where outputs will be 
+        :param str dir: The path of directory where outputs will be
          downloaded.
         """
         self.job_id = id

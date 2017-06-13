@@ -280,7 +280,7 @@ class AzureBatchSubmission(object):
             pool = self._configure_pool(self.renderer.get_title())
             batch_parameters['poolInfo'] = pool
             batch_parameters['commonEnvironmentSettings'] = self.env_manager.get_environment_settings()
-            
+
             self._log.debug(json.dumps(batch_parameters))
             new_job = self.batch.job.jobparameter_from_json(batch_parameters)
             progress.is_cancelled()

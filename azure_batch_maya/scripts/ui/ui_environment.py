@@ -5,6 +5,7 @@
 
 import os
 import utils
+import webbrowser
 
 from api import MayaAPI as maya
 
@@ -44,7 +45,8 @@ class EnvironmentUI(object):
                             self._image = image_settings
                             for image in images:
                                 self._image.add_item(image)
-                        maya.text(label="Use VM Type: ", align='right')
+                        maya.icon_button(label="Use VM Type: ", align='right', command=self.vm_type_link, style='iconAndTextCentered')
+                        #maya.text(label="Use VM Type: ", align='right')
                         with utils.Dropdown(self.set_sku) as sku_settings:
                             self._sku = sku_settings
                             for sku in skus.iterkeys():
@@ -215,3 +217,7 @@ class EnvironmentUI(object):
                 maya.error("Error starting Environment UI: {0}".format(exp))
                 self.is_logged_out()
         maya.refresh()
+
+    def vm_type_link(self):
+        base_link = "https://azure.microsoft.com/en-us/pricing/details/virtual-machines/{}".format(self.base.os_flavor().lower())
+        webbrowser.open(base_link, 2, True)
