@@ -96,7 +96,6 @@ class AzureBatchSubmission(object):
         open, this will do nothing.
         """
         self.frame.select_tab(self._tab_index)
-        self.ui.refresh()
 
     def _check_outputs(self):
         """Check whether at least one of the scene cameras is marked as renderable
