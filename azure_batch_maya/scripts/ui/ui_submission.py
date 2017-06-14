@@ -65,14 +65,14 @@ class SubmissionUI(object):
                     changeCommand=self.set_pool_instances,
                     annotation="Number of instances in pool")
                 self.pool_text = maya.text(
-                    label="Low Priority Instances:   ", align="right")
+                    label="Low Priority:   ", align="right")
                 self.lp_cores_control = maya.int_slider(
                     field=True, value=self.select_lp_instances,
                     minValue=0,
                     maxValue=self.base.max_pool_size,
                     fieldMinValue=0,
                     fieldMaxValue=self.base.max_pool_size,
-                    changeCommand=self.set_pool_instances,
+                    changeCommand=self.set_pool_lp_instances,
                     annotation="Number of instances in pool")
                 self.sku_lbl = maya.text(label="Total Cores:   ", align="right")
                 self.sku_text = maya.text(label="-", align="left")
@@ -210,7 +210,7 @@ class SubmissionUI(object):
             details = str(maya.menu(self.cores_control, query=True, value=True))
         else:
             details = self.select_instances
-        return {self.select_pool_type: details}
+        return {self.select_pool_type: {"dedicated":details, "low_priority": self.select_lp_instances}}
 
     def set_pool_instances(self, instances):
         """Update the number of requested instances in a pool

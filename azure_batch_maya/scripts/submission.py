@@ -174,7 +174,7 @@ class AzureBatchSubmission(object):
         pool_spec = self.ui.get_pool()
         if pool_spec.get(1):
             self._log.info("Using auto-pool.")
-            return self.pool_manager.create_auto_pool(int(pool_spec[1]), job_name)
+            return self.pool_manager.create_auto_pool(int(pool_spec[1]["dedicated"]), job_name, int(pool_spec[1]["low_priority"]))
         if pool_spec.get(2):
             self._log.info("Using existing pool.")
             pool_id = str(pool_spec[2])
@@ -183,7 +183,7 @@ class AzureBatchSubmission(object):
             return {'poolId' : pool_id}
         if pool_spec.get(3):
             self._log.info("Creating new pool.")
-            return self.pool_manager.create_pool(int(pool_spec[3]), job_name)
+            return self.pool_manager.create_pool(int(pool_spec[3]["dedicated"]), job_name, int(pool_spec[3]["low_priority"]))
 
     def start(self, session, assets, pools, env):
         """Load submission tab after plug-in has been authenticated.

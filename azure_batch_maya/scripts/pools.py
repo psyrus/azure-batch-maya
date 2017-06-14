@@ -165,7 +165,7 @@ class AzureBatchPools(object):
         pool_config = models.VirtualMachineConfiguration(
             image_reference=models.ImageReference(**image),
             node_agent_sku_id=node_agent_sku_id)
-        self._log.info("Creating new pool '{}' with {} VMs.".format(name, size))
+        self._log.info("Creating new pool '{}' with {} VMs and {} LP VMs.".format(name, size, low_priority_size))
         new_pool = models.PoolAddParameter(
             id=pool_id,
             display_name="Maya Pool for {}".format(name),
@@ -184,6 +184,7 @@ class AzureBatchPools(object):
         """Create a JSON auto pool specification.
         Called on job submission by submission.py.
         """
+        self._log.info("Creating auto pool '{}' with {} VMs and {} LP VMs.".format(job_name, size, low_priority_size))
         image = self.environment.get_image()
         node_agent_sku_id = image.pop('node_sku_id')
         pool_config = {
@@ -195,7 +196,7 @@ class AzureBatchPools(object):
             'virtualMachineConfiguration': pool_config,
             'maxTasksPerNode': 1,
             'applicationLicenses': self.environment.get_application_licenses(),
-            'target_low_priority_nodes': int(low_priority_size),
+            'targetLowPriorityNodes': int(low_priority_size),
             'targetDedicatedNodes': int(size)}
         auto_pool = {
             'autoPoolIdPrefix': "Maya_Auto_Pool_",
