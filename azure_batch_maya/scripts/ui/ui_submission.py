@@ -27,9 +27,10 @@ class SubmissionUI(object):
         """
         self.base = base
         self.label = "Submit"
-        self.page = maya.form_layout(enableBackground=True) 
+        self.page = maya.form_layout(enableBackground=True)
         self.select_pool_type = self.AUTO_POOL
         self.select_instances = 1
+        self.select_lp_instances = 0
 
         with utils.ScrollLayout(height=475, parent=self.page) as scroll:
             box_label = "Pool Settings"
@@ -38,7 +39,7 @@ class SubmissionUI(object):
                     numberOfColumns=2,
                     columnWidth=((1, 100), (2, 200)),
                     rowSpacing=(1, 10),
-                    rowOffset=((1, "top", 20), (3, "bottom", 20)))
+                    rowOffset=((1, "top", 20), (4, "bottom", 20)))
                 maya.text(label="Pools:   ", align="right")
                 maya.radio_group(
                     labelArray3=("Auto provision a pool for this job",
@@ -55,11 +56,21 @@ class SubmissionUI(object):
                     onCommand3=self.set_pool_new)
                 self.pool_text = maya.text(
                     label="Instances:   ", align="right")
-                self.control = maya.int_slider(
+                self.cores_control = maya.int_slider(
                     field=True, value=self.select_instances,
                     minValue=1,
                     maxValue=self.base.max_pool_size,
                     fieldMinValue=1,
+                    fieldMaxValue=self.base.max_pool_size,
+                    changeCommand=self.set_pool_instances,
+                    annotation="Number of instances in pool")
+                self.pool_text = maya.text(
+                    label="Low Priority Instances:   ", align="right")
+                self.lp_cores_control = maya.int_slider(
+                    field=True, value=self.select_lp_instances,
+                    minValue=0,
+                    maxValue=self.base.max_pool_size,
+                    fieldMinValue=0,
                     fieldMaxValue=self.base.max_pool_size,
                     changeCommand=self.set_pool_instances,
                     annotation="Number of instances in pool")
@@ -196,7 +207,7 @@ class SubmissionUI(object):
          specification as value.
         """
         if self.select_pool_type == self.EXISTING_POOL:
-            details = str(maya.menu(self.control, query=True, value=True))
+            details = str(maya.menu(self.cores_control, query=True, value=True))
         else:
             details = self.select_instances
         return {self.select_pool_type: details}
@@ -208,15 +219,22 @@ class SubmissionUI(object):
         self.select_instances = instances
         self.update_cores()
 
+    def set_pool_lp_instances(self, instances):
+        """Update the number of requested instances in a pool
+        based on the low priority instance slider.
+        """
+        self.select_lp_instances = instances
+        self.update_cores()
+
     def set_pool_new(self, *args):
         """Set selected pool type to be new pool of given size.
         Displays the pool size UI control.
         Command for select_pool_type radio buttons.
         """
         self.select_pool_type = self.NEW_POOL
-        maya.delete_ui(self.control)
+        maya.delete_ui(self.cores_control)
         maya.text(self.pool_text, edit=True, label="Instances:   ")
-        self.control = maya.int_slider(
+        self.cores_control = maya.int_slider(
             field=True,
             value=self.select_instances,
             minValue=1,
@@ -233,9 +251,9 @@ class SubmissionUI(object):
         Command for select_pool_type radio buttons.
         """
         self.select_pool_type = self.AUTO_POOL
-        maya.delete_ui(self.control)
+        maya.delete_ui(self.cores_control)
         maya.text(self.pool_text, edit=True, label="Instances:   ")
-        self.control = maya.int_slider(
+        self.cores_control = maya.int_slider(
             field=True,
             value=self.select_instances,
             minValue=1,
@@ -253,12 +271,12 @@ class SubmissionUI(object):
         Command for select_pool_type radio buttons.
         """
         self.select_pool_type = self.EXISTING_POOL
-        maya.delete_ui(self.control)
+        maya.delete_ui(self.cores_control)
         maya.text(self.pool_text, edit=True, label="loading...")
         maya.refresh()
         pool_options = self.base.available_pools()
         maya.text(self.pool_text, edit=True, label="Pool ID:   ")
-        self.control = maya.menu(
+        self.cores_control = maya.menu(
             parent=self.pool_settings,
             annotation="Use an existing persistent pool ID")
         for pool_id in pool_options:
@@ -268,4 +286,4 @@ class SubmissionUI(object):
         return self.base.env_manager.get_vm_sku_cores() if hasattr(self.base, 'env_manager') else 0
 
     def update_cores(self):
-        maya.text(self.sku_text, edit=True, label= int(self.select_instances) * self.get_selected_sku_cores())
+        maya.text(self.sku_text, edit=True, label=(int(self.select_instances) + int(self.select_lp_instances)) * self.get_selected_sku_cores())

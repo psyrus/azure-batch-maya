@@ -18,7 +18,7 @@ from ui_pools import PoolsUI
 
 class AzureBatchPools(object):
     """Handler for pool functionality."""
-    
+
     def __init__(self, index, frame, call):
         """Create new Pool Handler.
 
@@ -28,7 +28,7 @@ class AzureBatchPools(object):
         :param func call: The shared REST API call wrapper.
         """
         self._log = logging.getLogger('AzureBatchMaya')
-        self._call = call               
+        self._call = call
         self._session = None
         self._tab_index = index
 
@@ -115,7 +115,7 @@ class AzureBatchPools(object):
             self.ui.refresh()
 
     def is_auto_pool(self):
-        """Returns whether the selected pool is an auto-pool or a 
+        """Returns whether the selected pool is an auto-pool or a
         persistant pool.
         """
         try:
@@ -136,7 +136,7 @@ class AzureBatchPools(object):
             return
         finally:
             self.ui.refresh()
-    
+
     def get_pool_size(self):
         """Get the target number of VMs in the selected pool."""
         try:
@@ -154,7 +154,7 @@ class AzureBatchPools(object):
         except AttributeError:
             raise ValueError('Selected pool is not a valid Maya pool.')
 
-    def create_pool(self, size, name):
+    def create_pool(self, size, name, low_priority_size=0):
         """Create and deploy a new pool.
         Called on job submission by submission.py.
         TODO: Support auto-scale formula.
@@ -174,12 +174,13 @@ class AzureBatchPools(object):
             vm_size=self.environment.get_vm_sku(),
             virtual_machine_configuration=pool_config,
             target_dedicated_nodes=int(size),
+            target_low_priority_nodes=int(low_priority_size),
             max_tasks_per_node=1)
         self._call(self.batch.pool.add, new_pool)
         self._log.debug("Successfully created pool.")
         return {"poolId" : pool_id}
 
-    def create_auto_pool(self, size, job_name):
+    def create_auto_pool(self, size, job_name, low_priority_size=0):
         """Create a JSON auto pool specification.
         Called on job submission by submission.py.
         """
@@ -194,21 +195,22 @@ class AzureBatchPools(object):
             'virtualMachineConfiguration': pool_config,
             'maxTasksPerNode': 1,
             'applicationLicenses': self.environment.get_application_licenses(),
+            'target_low_priority_nodes': int(low_priority_size),
             'targetDedicatedNodes': int(size)}
         auto_pool = {
             'autoPoolIdPrefix': "Maya_Auto_Pool_",
             'poolLifetimeOption': "job",
             'keepAlive': False,
-            'pool': pool_spec}      
+            'pool': pool_spec}
         return {'autoPoolSpecification': auto_pool}
 
-    def resize_pool(self, new_size):
+    def resize_pool(self, new_size, new_low_priority_size=0):
         """Resize an existing pool."""
         try:
             pool = self.pools[self.selected_pool.index]
             self._log.info("Resizing pool '{}' to {} VMs".format(pool.id, new_size))
             self._call(self.batch.pool.resize, pool.id, {'target_dedicated_nodes':int(new_size),
-                                                         'target_low_priority_nodes': 0})
+                                                         'target_low_priority_nodes': int(new_low_priority_size)})
             maya.refresh()
         except Exception as exp:
             self._log.info("Failed to resize pool {0}".format(exp))
