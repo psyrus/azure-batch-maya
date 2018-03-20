@@ -296,6 +296,18 @@ class AzureBatchJobInfo(object):
         label = ' '.join(datetime)
         maya.text(self._submission, edit=True, label=" {0}".format(label))
 
+    def set_completed(self, value, state=""):
+        """Set the label for date/time completed.
+        :param str value: The datetime string to format.
+        """
+        if state != "completed":
+            maya.text(self._completed, edit=True, label=" Pending completion...")
+            return
+        datetime = value.split('T')
+        datetime[1] = datetime[1].split('.')[0]
+        label = ' '.join(datetime)
+        maya.text(self._completed, edit=True, label=" {0}".format(label))
+
     def set_tasks(self, value):
         """Set the label for number of tasks in the job.
         :param int value: The number of tasks.
@@ -335,6 +347,7 @@ class AzureBatchJobInfo(object):
         self._status, st_row = self.display_info("Status:   ")
         self._progress, pr_row = self.display_info("Progress:   ")
         self._submission, sb_row = self.display_info("Submitted:   ")
+        self._completed, cp_row = self.display_info("Completed:   ")
         self._tasks, tk_row = self.display_info("Task Count:   ")
         self._job, jb_row = self.display_data("Job ID:   ")
         self._pool, pl_row = self.display_data("Pool:   ")
@@ -357,6 +370,7 @@ class AzureBatchJobInfo(object):
                         (st_row,"left",5), (st_row,"right",5),
                         (pr_row,"left",5), (pr_row,"right",5),
                         (sb_row,"left",5), (sb_row,"right",5),
+                        (cp_row,"left",5), (sb_row,"right",5),
                         (tk_row,"left",5), (tk_row,"right",5),
                         (jb_row,"left",5), (jb_row,"right",5),
                         (pl_row,"left",5), (pl_row,"right",5),
@@ -371,7 +385,8 @@ class AzureBatchJobInfo(object):
            attachControl=[(st_row,"top",5, row),
                           (pr_row,"top",5, st_row),
                           (sb_row,"top",5, pr_row),
-                          (tk_row,"top",5, sb_row),
+                          (cp_row,"top",5, sb_row),
+                          (tk_row,"top",5, cp_row),
                           (jb_row,"top",5, tk_row),
                           (pl_row,"top",5, jb_row),
                           (dr_row,"top",5, pl_row),

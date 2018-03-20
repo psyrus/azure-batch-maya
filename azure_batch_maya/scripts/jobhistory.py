@@ -221,6 +221,7 @@ class AzureBatchJobHistory(object):
             self.selected_job.set_progress('loading...')
             self.selected_job.set_tasks('loading...')
             self.selected_job.set_submission(job.creation_time.isoformat())
+            self.selected_job.set_completed('loading...')
             self.selected_job.set_job(job.id)
             self.selected_job.set_pool(job.pool_info.pool_id)
             self.selected_job.set_label(job.display_name)
@@ -255,6 +256,7 @@ class AzureBatchJobHistory(object):
             self.selected_job.set_status(state)
             self.selected_job.set_progress(str(percentage)+'%')
             self.selected_job.set_tasks(len(tasks))
+            self.selected_job.set_completed(job.state_transition_time.isoformat(), state)
             maya.refresh()
         except Exception as exp:
             self._log.warning("Failed to update job details {0}".format(exp))

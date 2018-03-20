@@ -19,7 +19,7 @@ class AzureBatchUI(object):
         if (maya.window("AzureBatch", q=1, exists=1)):
             maya.delete_ui("AzureBatch")
         self.ui = maya.window("AzureBatch",
-                              title="Azure Batch Maya Client v{0}".format(
+                              title="Azure Batch Maya Client v{0} (Born Digital)".format(
                                   os.environ["AZUREBATCH_VERSION"]),
                               sizeable=True,
                               height=450,
