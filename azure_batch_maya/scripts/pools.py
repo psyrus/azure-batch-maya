@@ -60,6 +60,8 @@ class AzureBatchPools(object):
         all_pools = self._call(self.batch.pool.list)
         self.pools = []
         for pool in all_pools:
+            self._log.debug("SKU: " + pool.virtual_machine_configuration.node_agent_sku_id)
+
             if pool.virtual_machine_configuration:
                 self.pools.append(pool)
         self.pools.sort(key=lambda x: x.creation_time, reverse=True)
@@ -91,6 +93,7 @@ class AzureBatchPools(object):
         """Update the display for the currently selected pool. This is called
         when a specific pool is selected or refreshed in the UI.
         """
+
         try:
             pool = self.pools[index]
             self.selected_pool.set_label("loading...")
@@ -102,8 +105,7 @@ class AzureBatchPools(object):
             self.selected_pool.set_label(pool.display_name if pool.display_name else pool.id)
             self.selected_pool.set_dedicated_size(pool)
             self.selected_pool.set_low_pri_size(pool)
-            self.selected_pool.set_type(
-                "Auto" if pool.id.startswith("Maya_Auto_Pool") else "Provisioned")
+            self.selected_pool.set_type("Auto" if pool.id.startswith("Maya_Auto_Pool") else "Provisioned")
             self.selected_pool.set_state(pool.state.value, nodes)
             self.selected_pool.set_allocation(pool.allocation_state.value)
             self.selected_pool.set_created(pool.creation_time)
@@ -151,7 +153,7 @@ class AzureBatchPools(object):
         """Get the OS flavor of the specified pool ID."""
         try:
             pool = self._call(self.batch.pool.get, pool_id)
-            return self.environment.os_flavor(pool.virtual_machine_configuration.image_reference)
+            return self.environment.os_flavor(pool.virtual_machine_configuration)
         except AttributeError:
             raise ValueError('Selected pool is not a valid Maya pool.')
 
@@ -189,7 +191,8 @@ class AzureBatchPools(object):
         node_agent_sku_id = image.pop('node_sku_id')
         pool_config = {
             'imageReference': image,
-            'nodeAgentSKUId': node_agent_sku_id}
+            'nodeAgentSKUId': node_agent_sku_id,
+            'node_agent_sku_id':node_agent_sku_id}
         pool_spec = {
             'vmSize': self.environment.get_vm_sku(),
             'displayName': "Auto Pool for {}".format(job_name),
@@ -202,7 +205,8 @@ class AzureBatchPools(object):
             'autoPoolIdPrefix': "Maya_Auto_Pool_",
             'poolLifetimeOption': "job",
             'keepAlive': False,
-            'pool': pool_spec}      
+            'pool': pool_spec}
+        self._log.debug(pool_spec)
         return {'autoPoolSpecification': auto_pool}
 
     def resize_pool(self, new_dedicated, new_low_pri):

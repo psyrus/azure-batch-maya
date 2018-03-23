@@ -17,21 +17,31 @@ from ui_environment import EnvironmentUI
 
 MAYA_IMAGES = {
     'Windows 2016':
-        {
-            'node_sku_id': 'batch.node.windows amd64',
-            'publisher': 'batch',
-            'offer': 'rendering-windows2016',
-            'sku': 'rendering',
-            'version': 'latest'
-        },
+    {
+        'node_sku_id': 'batch.node.windows amd64',
+        'publisher': 'batch',
+        'offer': 'rendering-windows2016',
+        'sku': 'rendering',
+        'version': 'latest'
+    },
     'Centos 73':
-        {
-            'node_sku_id': 'batch.node.centos 7',
-            'publisher': 'batch',
-            'offer': 'rendering-centos73',
-            'sku': 'rendering',
-            'version': 'latest'
-        },
+    {
+        'node_sku_id': 'batch.node.centos 7',
+        'publisher': 'batch',
+        'offer': 'rendering-centos73',
+        'sku': 'rendering',
+        'version': 'latest'
+    },
+    'Custom':
+    {
+        'node_sku_id': 'batch.node.windows amd64',
+        #'publisher': 'MicrosoftWindowsServer',
+        #'offer': 'WindowsServer',
+        #'sku': '2016-Datacenter',
+        #'version': 'latest',
+        'VirtualMachineImageId':'/subscriptions/7568b5f1-f657-4315-9138-f5374bfd6b68/resourceGroups/CUSTOM_IMAGE/providers/Microsoft.Compute/images/AZCOPYMAYAIO-image',
+        'virtual_machine_image_id': '/subscriptions/7568b5f1-f657-4315-9138-f5374bfd6b68/resourceGroups/CUSTOM_IMAGE/providers/Microsoft.Compute/images/AZCOPYMAYAIO-image'
+    },
 }
 LICENSES = [
     {'label': 'Maya', 'id': 'maya', 'plugin': None },
@@ -129,18 +139,24 @@ class AzureBatchEnvironment(object):
     def get_vm_sku(self):
         return self.ui.get_sku()
 
-    def os_flavor(self, pool_image=None):
-        if pool_image:
+    def os_flavor(self, vm_config=None):
+        if vm_config:
+            pool_image = vm_config.image_reference
             windows_offers = [value['offer'] for value in MAYA_IMAGES.values() if 'windows' in value['node_sku_id']]
             linux_offers = [value['offer'] for value in MAYA_IMAGES.values() if value['offer'] not in windows_offers]
-            if pool_image.offer in windows_offers:
+            if pool_image.offer in windows_offers or "windows" in vm_config.node_agent_sku_id:
                 return utils.OperatingSystem.windows
             elif pool_image.offer in linux_offers:
                 return utils.OperatingSystem.linux
             else:
                 raise ValueError('Selected pool is not using a valid Maya image.')
         image = self.ui.get_image()
-        if utils.OperatingSystem.windows.value in image:
+        self._log.debug(image)
+        image_sku = MAYA_IMAGES[image]['node_sku_id']
+        self._log.debug(image_sku)
+        self._log.debug(utils.OperatingSystem.windows.value)
+
+        if utils.OperatingSystem.windows.value.lower() in image_sku.lower():
             self._log.debug("Detected windows: {}".format(image))
             return utils.OperatingSystem.windows
         else:

@@ -201,6 +201,7 @@ class AzureBatchSubmission(object):
         """
         self._log.debug("Starting AzureBatchSubmission...")
         self.batch = session.batch
+        self._log.debug(self.batch)
         self.asset_manager = assets
         self.pool_manager = pools
         self.env_manager = env
@@ -228,6 +229,7 @@ class AzureBatchSubmission(object):
         the job submission pool selection drop down.
         """
         pools = self.pool_manager.list_pools(lazy=True)
+        self._log.info(pools)
         return pools
 
     def submit(self, watch_job=False, download_dir=None):

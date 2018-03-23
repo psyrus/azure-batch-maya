@@ -29,8 +29,8 @@ class SubmissionUI(object):
         self.label = "Submit"
         self.page = maya.form_layout(enableBackground=True) 
         self.select_pool_type = self.AUTO_POOL
-        self.select_dedicated_instances = 1
-        self.select_low_pri_instances = 0
+        self.select_dedicated_instances = 0
+        self.select_low_pri_instances = 1
         
         with utils.ScrollLayout(height=475, parent=self.page) as scroll:
             box_label = "Pool Settings"
@@ -66,7 +66,7 @@ class SubmissionUI(object):
                     parent=self.pool_config[0]))
                 self.pool_config.append(maya.int_field(
                     value=self.select_dedicated_instances,
-                    minValue=1,
+                    minValue=0,
                     maxValue=self.base.max_pool_size,
                     changeCommand=self.set_dedicated_instances,
                     annotation="Number of dedicated VMs in pool",
