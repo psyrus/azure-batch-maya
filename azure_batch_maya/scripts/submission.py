@@ -229,7 +229,6 @@ class AzureBatchSubmission(object):
         the job submission pool selection drop down.
         """
         pools = self.pool_manager.list_pools(lazy=True)
-        self._log.info(pools)
         return pools
 
     def submit(self, watch_job=False, download_dir=None):

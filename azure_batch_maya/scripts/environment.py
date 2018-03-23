@@ -35,10 +35,6 @@ MAYA_IMAGES = {
     'Custom':
     {
         'node_sku_id': 'batch.node.windows amd64',
-        #'publisher': 'MicrosoftWindowsServer',
-        #'offer': 'WindowsServer',
-        #'sku': '2016-Datacenter',
-        #'version': 'latest',
         'VirtualMachineImageId':'/subscriptions/7568b5f1-f657-4315-9138-f5374bfd6b68/resourceGroups/CUSTOM_IMAGE/providers/Microsoft.Compute/images/AZCOPYMAYAIO-image',
         'virtual_machine_image_id': '/subscriptions/7568b5f1-f657-4315-9138-f5374bfd6b68/resourceGroups/CUSTOM_IMAGE/providers/Microsoft.Compute/images/AZCOPYMAYAIO-image'
     },
@@ -46,7 +42,7 @@ MAYA_IMAGES = {
 LICENSES = [
     {'label': 'Maya', 'id': 'maya', 'plugin': None },
     {'label': 'Arnold', 'id': 'arnold', 'plugin': 'mtoa' },
-    {'label': 'V-Ray (Preview)', 'id': 'vray', 'plugin': 'vrayformaya' }
+    {'label': 'V-Ray', 'id': 'vray', 'plugin': 'vrayformaya' }
 ]
 #
 
@@ -151,10 +147,7 @@ class AzureBatchEnvironment(object):
             else:
                 raise ValueError('Selected pool is not using a valid Maya image.')
         image = self.ui.get_image()
-        self._log.debug(image)
         image_sku = MAYA_IMAGES[image]['node_sku_id']
-        self._log.debug(image_sku)
-        self._log.debug(utils.OperatingSystem.windows.value)
 
         if utils.OperatingSystem.windows.value.lower() in image_sku.lower():
             self._log.debug("Detected windows: {}".format(image))
