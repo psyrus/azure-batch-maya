@@ -57,21 +57,20 @@ class AzureBatchUI(object):
             page.is_logged_out()
 
     def is_logged_in(self):
-        """Called when the plug-in is authenticated. Sets the Submit tab as
+        """Called when the plug-in is authenticated. Sets the Config tab as
         the display tab.
         """
-        maya.tab_layout(self.tab_display, edit=True, selectTabIndex=2)
+        maya.tab_layout(self.tab_display, edit=True, selectTabIndex=1)
         self.tabs[0].is_logged_in()
 
     def change_tab(self, *args):
         """Called when a user clicks on a tab to display it.
         Initiates the loading of that tabs contents.
         """
-        if self.base.config.auth:
-            selected = maya.tab_layout(
-                self.tab_display, query=True, selectTabIndex=True)
-            selected_tab = self.tabs[selected-1]
-            selected_tab.prepare()
+        selected = maya.tab_layout(
+            self.tab_display, query=True, selectTabIndex=True)
+        selected_tab = self.tabs[selected-1]
+        selected_tab.prepare()
 
     def select_tab(self, tab):
         """Select a specific tab for display.

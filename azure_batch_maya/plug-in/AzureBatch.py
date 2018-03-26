@@ -35,13 +35,15 @@ sys.path.insert(0, INSTALL_DIR)
 REQUIREMENTS = {
     "pathlib==1.0.1": "pathlib",
     "futures==3.1.1": "concurrent.futures",
-    "msrestazure==0.4.11": "msrestazure",
+    "msrestazure==0.4.16": "msrestazure",
     "azure-common==1.1.8": "azure.common",
+    "python-dateutil==2.6.1": "dateutil",
 }
 
 NAMESPACE_PACKAGES = {
     "azure-mgmt-batch==4.0.0": "azure.mgmt.batch",
     "azure-mgmt-storage==1.0.0": "azure.mgmt.storage",
+    "azure-mgmt-resource==1.2.2": "azure.mgmt.resource",
     "azure-batch==4.0.0": "azure.batch",
     "azure-storage==0.32.0": "azure.storage",
     "azure-batch-extensions==1.0.1": "azure.batch_extensions"

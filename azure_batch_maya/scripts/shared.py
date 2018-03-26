@@ -49,12 +49,30 @@ class AzureBatchSettings(object):
         self._log = logging.getLogger('AzureBatchMaya')
         try:
             self.frame = AzureBatchUI(self)
-            self.config = AzureBatchConfig(self.tab_index['AUTH'], self.frame, self.start)
-            self.submission = AzureBatchSubmission(self.tab_index['SUBMIT'], self.frame, self.call)
-            self.assets = AzureBatchAssets(self.tab_index['ASSETS'], self.frame, self.call)
-            self.pools = AzureBatchPools(self.tab_index['POOLS'], self.frame, self.call)
-            self.jobhistory =  AzureBatchJobHistory(self.tab_index['JOBHISTORY'], self.frame, self.call)
-            self.env =  AzureBatchEnvironment(self.tab_index['ENV'], self.frame, self.call)
+            self.config = AzureBatchConfig(self.tab_index['AUTH'], self, self.frame, self.start, self.call)
+
+            if(self.config.can_init_from_config):
+                self.init_after_account_selected()
+
+        except Exception as exp:
+            if (maya.window("AzureBatch", q=1, exists=1)):
+                maya.delete_ui("AzureBatch")
+            message = "Batch Plugin Failed to Start: {0}".format(exp)
+            maya.error(message)
+            raise
+
+    def init_after_account_selected(self):
+        try:
+            if not hasattr(self, "submission"):
+                self.submission = AzureBatchSubmission(self.tab_index['SUBMIT'], self.frame, self.call)
+            if not hasattr(self, "assets"):
+                self.assets = AzureBatchAssets(self.tab_index['ASSETS'], self.frame, self.call)
+            if not hasattr(self, "pools"):
+                self.pools = AzureBatchPools(self.tab_index['POOLS'], self.frame, self.call)
+            if not hasattr(self, "jobhistory"):
+                self.jobhistory =  AzureBatchJobHistory(self.tab_index['JOBHISTORY'], self.frame, self.call)
+            if not hasattr(self, "env"):
+                self.env =  AzureBatchEnvironment(self.tab_index['ENV'], self.frame, self.call)
             self.start()
         except Exception as exp:
             if (maya.window("AzureBatch", q=1, exists=1)):
@@ -70,15 +88,12 @@ class AzureBatchSettings(object):
         """
         try:
             self._log.debug("Starting AzureBatchShared...")
-            if self.config.auth:
-                self.frame.is_logged_in()
-                self.env.configure(self.config)
-                self.jobhistory.configure(self.config)
-                self.assets.configure(self.config)
-                self.pools.configure(self.config, self.env)
-                self.submission.start(self.config, self.assets, self.pools, self.env)
-            else:
-                self.frame.is_logged_out()
+            self.frame.is_logged_in()
+            self.env.configure(self.config)
+            self.jobhistory.configure(self.config)
+            self.assets.configure(self.config)
+            self.pools.configure(self.config, self.env)
+            self.submission.start(self.config, self.assets, self.pools, self.env)
         except Exception as exp:
             self._log.warning(exp)
             if (maya.window("AzureBatch", q=1, exists=1)):

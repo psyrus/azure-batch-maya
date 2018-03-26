@@ -7,12 +7,23 @@ from enum import Enum
 import os
 import logging
 import platform
+import subprocess
 
 from azurebatchmayaapi import MayaAPI as maya
 from exception import CancellationException, FileUploadException
 
 
 MAX_LOCAL_PATH_LENGTH = 150
+
+def copy_to_clipboard(txt):
+    platform = get_os()
+    if platform == OperatingSystem.windows.value:
+        cmd='echo '+ txt.strip() +'|clip'
+        return subprocess.check_call(cmd, shell=True)
+    if platform == OperatingSystem.darwin.value:
+        process = subprocess.Popen(
+        'pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+        process.communicate(txt.encode('utf-8')) 
 
 
 def shorten_path(path, filename):
