@@ -36,8 +36,9 @@ REQUIREMENTS = {
     "pathlib==1.0.1": "pathlib",
     "futures==3.1.1": "concurrent.futures",
     "msrestazure==0.4.16": "msrestazure",
-    "azure-common==1.1.8": "azure.common",
     "python-dateutil==2.6.1": "dateutil",
+    "configparser==3.5.0": "backports.configparser",
+    "azure-common==1.1.8": "azure.common"
 }
 
 NAMESPACE_PACKAGES = {
@@ -49,7 +50,7 @@ NAMESPACE_PACKAGES = {
     "azure-batch-extensions==1.0.1": "azure.batch_extensions"
 }
 
-VERSION = "0.17.0"
+VERSION = "0.18.0"
 EULA_PREF = "AzureBatch_EULA"
 SHELF_FILE = "shelf_AzureBatch.mel"
 cmd_name = "AzureBatch"
@@ -479,6 +480,7 @@ def initializePlugin(obj):
                 else:
                     install_pkg(pip_location, package)
             shutil.copy(os.path.join(INSTALL_DIR, 'azure', '__init__.py'), os.path.join(INSTALL_DIR, 'azure', 'mgmt', '__init__.py'))
+            shutil.copy(os.path.join(INSTALL_DIR, 'azure', '__init__.py'), os.path.join(INSTALL_DIR, 'backports', '__init__.py'))
         except:
             error = "Failed to install dependencies - please install manually"
             cmds.confirmDialog(message=error, button='OK')
